@@ -35,19 +35,19 @@ var game2 = simul();
 window.onload = function () {
     var btn = document.getElementById("cy-test").addEventListener('click', function (event) {
 
-        var createRunner = function (state) {
+        var createRunner = function (strategy) {
             return function () {
-                state.init && state.init();
+                strategy.init && strategy.init();
                 var inter = setInterval(function () {
                     var oldGridState = JSON.stringify(game.grid.cells);
-                    if (!state.do()) {
+                    if (!strategy.do()) {
                         clearInterval(inter);
                         return;
                     }
                     var gridState = JSON.stringify(game.grid.cells);
                     if (gridState === oldGridState) {
                         clearInterval(inter);
-                        state.onSame && state.onSame();
+                        strategy.onSame && strategy.onSame();
                         return;
                     }
                     oldGridState = gridState;
@@ -86,7 +86,7 @@ window.onload = function () {
                 return true;
             },
             onSame: function () {
-                gotoState('right_left');
+                useStrategy('right_left');
             }
         };
 
@@ -94,9 +94,9 @@ window.onload = function () {
             do: function () {
                 game.inputManager.emit('move', RIGHT);
                 if (getLine(game.grid, 0)[0] == 0) {
-                    gotoState('left');
+                    useStrategy('left');
                 } else {
-                    gotoState('up_loop');
+                    useStrategy('up_loop');
                 }
                 return false;
             }
@@ -107,14 +107,14 @@ window.onload = function () {
                 game.inputManager.emit('move', UP);
             },
             onSame: function () {
-                gotoState('left');
+                useStrategy('left');
             }
         };
 
         var s_left = {
             do: function () {
                 game.inputManager.emit('move', LEFT);
-                gotoState('left_up_loop');
+                useStrategy('left_up_loop');
                 return false;
             }
         }
@@ -127,7 +127,7 @@ window.onload = function () {
             },
             do: function () {
                 if (this.cur == this.mvts.length) {
-                    gotoState('left_up_loop');
+                    useStrategy('left_up_loop');
                     return false;
                 } else {
                     if (this.mvts[this.cur] == UP) {
@@ -142,7 +142,7 @@ window.onload = function () {
                 }
             },
             onSame: function () {
-                gotoState('down_up');
+                useStrategy('down_up');
             }
         };
 
@@ -157,7 +157,7 @@ window.onload = function () {
                     return false;
                 }
                 game.inputManager.emit('move', this.mvts[this.cur]);
-                gotoState('left_up_loop');
+                useStrategy('left_up_loop');
                 return true;
             },
             onSame: function () {
@@ -165,7 +165,7 @@ window.onload = function () {
             }
         };
 
-        var states = {
+        var strategies = {
             left_up_loop: createRunner(s_left_up_loop),
             right_left: createRunner(s_right_left),
             down_up: createRunner(s_down_up),
@@ -174,11 +174,11 @@ window.onload = function () {
             left: createRunner(s_left)
         };
 
-        var gotoState = function (stateName) {
-            console.log('State: ', stateName);
-            states[stateName]();
+        var useStrategy = function (strategyName) {
+            console.log('Strategy: ', strategyName);
+            strategies[strategyName]();
         };
 
-        gotoState('left_up_loop');
+        useStrategy('left_up_loop');
     });
 };
