@@ -8,6 +8,30 @@ var RIGHT = 1;
 var DOWN = 2;   
 var LEFT = 3;
 
+var getLine = function (grid, num) {
+    return grid.cells.map(function (row) {
+        return row[num] ? row[num].value : 0;
+    });
+};
+
+var getCol = function (grid, num) {
+    return grid.cells[num].map(function (cell) {
+        return cell ? cell.value : 0;
+    });
+};
+
+var print_grid = function (grid) {
+    for (var i = 0; i < 4; i++) {
+        console.log(getLine(grid, i));
+    }
+};
+
+var simul = function () {
+    return new GameManager(4, FakeInputManager, FakeHTMLActuator, FakeStorageManager);
+};
+
+var game2 = simul();
+
 window.onload = function () {
     var btn = document.getElementById("cy-test").addEventListener('click', function (event) {
 
