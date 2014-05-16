@@ -71,7 +71,7 @@ window.onload = function () {
             }
         });
 
-        var sleepTime = 20;
+        var sleepTime = 200;
 
 
         var s_left_up_loop = {
@@ -90,17 +90,52 @@ window.onload = function () {
             }
         };
 
+        var s_right = {
+            do: function () {
+                game.inputManager.emit('move', RIGHT);
+                if (getLine(game.grid, 0)[0] == 0) {
+                    gotoState('left');
+                } else {
+                    gotoState('up_loop');
+                }
+                return false;
+            }
+        };
+
+        var s_up_loop = {
+            do: function () {
+                game.inputManager.emit('move', UP);
+            },
+            onSame: function () {
+                gotoState('left');
+            }
+        };
+
+        var s_left = {
+            do: function () {
+                game.inputManager.emit('move', LEFT);
+                gotoState('left_up_loop');
+                return false;
+            }
+        }
+
         var s_right_left = {
-            mvts: [RIGHT, LEFT],
+            mvts: [RIGHT, UP, LEFT],
             cur: 0,
             init: function () {
                 this.cur = 0;
             },
             do: function () {
-                if (this.cur == 2) {
+                if (this.cur == this.mvts.length) {
                     gotoState('left_up_loop');
                     return false;
                 } else {
+                    if (this.mvts[this.cur] == UP) {
+                        var line = getLine(game.grid, 0);
+                        if (line[0] == 0) {
+                            this.cur++;
+                        }
+                    }
                     game.inputManager.emit('move', this.mvts[this.cur]);
                     this.cur++;
                     return true;
@@ -133,9 +168,11 @@ window.onload = function () {
         var states = {
             left_up_loop: createRunner(s_left_up_loop),
             right_left: createRunner(s_right_left),
-            down_up: createRunner(s_down_up)
+            down_up: createRunner(s_down_up),
+            right: createRunner(s_right),
+            up_loop: createRunner(s_up_loop),
+            left: createRunner(s_left)
         };
-
 
         var gotoState = function (stateName) {
             console.log('State: ', stateName);
