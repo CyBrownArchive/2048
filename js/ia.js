@@ -21,11 +21,81 @@ var print_grid = function (grid) {
     }
 };
 
-var simul = function () {
-    return new GameManager(4, FakeInputManager, FakeHTMLActuator, FakeStorageManager);
+var clone_grid = function (grid) {
+    return new Grid(4, grid.serialize().cells);
 };
 
-var game2 = simul();
+var create_fake_game = function () {
+    var fakeGame = new GameManager(4, FakeInputManager, FakeHTMLActuator, FakeStorageManager);
+    fakeGame.addRandomTile = function () {};
+    fakeGame.grid = clone_grid(game.grid);
+    return fakeGame;
+};
+
+var free_tiles = function (grid) {
+    return grid.availableCells().length;
+};
+
+var best_move = function (dirs, comparator) {
+    var o = [];
+    dirs.forEach(function (dir) {
+        var g = create_fake_game();
+        g.inputManager.emit('move', dir);
+        o.push({
+            score: comparator(g.grid),
+            dir: dir
+        });
+    });
+    o.sort(function (a, b) {
+        return b.score - a.score;
+    });
+    return o[0].dir;
+};
+
+var grid_score = function (grid) {
+
+/*
+    var pos_coefs = [
+        [256, 2, 1, 1],
+        [128, 4, 1, 1],
+        [64, 8, 1, 1],
+        [32, 16, 1, 1]
+    ];
+*/
+
+    var pos_coefs = [
+        [64, 4, 1, 1],
+        [16, 1, 1, 1],
+        [8, 1, 1, 1],
+        [4, 1, 1, 1]
+    ];
+
+    var cell_score = function (value) {};
+
+
+    var value_coefs = {
+        2: 1,
+        4: 3,
+        8: 5,
+        16: 9,
+        32: 17,
+        64: 33,
+        128: 65,
+        256: 129,
+        512: 257,
+        1024: 513,
+        2048: 1025
+    };
+
+    var acc = 0;
+    grid.eachCell(function (x, y, cell) {
+        if (cell) {
+            acc += value_coefs[cell.value] * pos_coefs[x][y];
+            //acc += value_coefs[cell.value] * pos_coefs[x][y];
+        }
+    });
+    return acc;
+};
 
 window.onload = function () {
     var btn = document.getElementById("cy-test").addEventListener('click', function (event) {
