@@ -140,10 +140,10 @@ var IaRunner = function () {
 
 IaRunner.prototype.run = function () {
     var oldGridState = JSON.stringify(game.grid.cells);
-    currentStrategy.do();
+    this.currentStrategy.do();
     var gridState = JSON.stringify(game.grid.cells);
     if (oldGridState == gridState) {
-        currentStrategy.onSame();
+        this.currentStrategy.onSame();
     }
 };
 
@@ -153,7 +153,7 @@ IaRunner.prototype.start = function () {
     } else {
         var _this = this;
         this.started = true;
-        this.inter = setInterval(this.run, this.sleepTime);
+        this.inter = setInterval(this.run.bind(this), this.sleepTime);
         var onGameOver = function (event) {
             _this.stop();
             document.body.removeEventListener('game.over', onGameOver);
@@ -180,18 +180,18 @@ IaRunner.prototype.stop = function () {
 };
 
 IaRunner.prototype.switchStrategy = function (strategy) {
-    currentStrategy = new strategy();
-    console.log('Switching to ' + currentStrategy.name);
+    this.currentStrategy = new strategy();
+    console.log('Switching to ' + this.currentStrategy.name);
 };
 
 IaRunner.prototype.callStrategy = function (strategy, callId) {
     var strat = new strategy();
     console.log('Calling ' + strat.name);
     this.strategyStack.push({
-        strategy: currentStrategy,
+        strategy: this.currentStrategy,
         callId: callId
     });
-    currentStrategy = strat;
+    this.currentStrategy = strat;
 };
 
 IaRunner.prototype.returnStrategy = function () {
@@ -200,10 +200,10 @@ IaRunner.prototype.returnStrategy = function () {
     }
     var retStrategy = this.strategyStack[this.strategyStack.length - 1].strategy;
     var callId = this.strategyStack[this.strategyStack.length - 1].callId;
-    currentStrategy = retStrategy;
+    this.currentStrategy = retStrategy;
     this.strategyStack.pop();
-    console.log('Return ' + currentStrategy.name);
-    currentStrategy.onReturn(callId);
+    console.log('Return ' + this.currentStrategy.name);
+    this.currentStrategy.onReturn(callId);
 };
 
 
