@@ -199,7 +199,7 @@ LeftUpLoopStrategy.prototype.do = function () {
 
 LeftUpLoopStrategy.prototype.onSame = function () {
     this.lastGridState = JSON.stringify(game.grid.cells);
-    callStrategy(RightStrategy, 1);
+    callStrategy(RightThenUpLoopThenLeftStrategy, 1);
 };
 
 LeftUpLoopStrategy.prototype.onReturn = function (callId) {
