@@ -274,7 +274,7 @@ UpLoopStrategy.prototype.do = function () {
 };
 
 UpLoopStrategy.prototype.onSame = function () {
-    switchStrategy(LeftStrategy);
+    returnStrategy();
 };
 
 
