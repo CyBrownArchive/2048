@@ -156,11 +156,7 @@ RightStrategy.prototype.name = 'RightStrategy';
 
 RightStrategy.prototype.do = function () {
     game.inputManager.emit('move', RIGHT);
-    if (getLine(game.grid, 0)[0] == 0) {
-        switchStrategy(LeftStrategy);
-    } else {
-        switchStrategy(UpLoopStrategy);
-    }
+    returnStrategy();
 };
 
 RightStrategy.prototype.onSame = function () {
