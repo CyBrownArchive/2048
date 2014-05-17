@@ -216,6 +216,33 @@ LeftUpLoopStrategy.prototype.onReturn = function (callId) {
     }
 };
 
+var RightThenUpLoopThenLeftStrategy = function () {
+    Strategy.call(this);
+    this.strategies = [
+        RightStrategy,
+        UpLoopStrategy,
+        LeftStrategy
+    ];
+    this.cur = 0;
+};
+RightThenUpLoopThenLeftStrategy.prototype = Object.create(Strategy.prototype);
+
+RightThenUpLoopThenLeftStrategy.prototype.name = 'RightThenUpLoopThenLeftStrategy';
+
+RightThenUpLoopThenLeftStrategy.prototype.do = function () {
+    callStrategy(this.strategies[this.cur], 1);
+};
+
+RightThenUpLoopThenLeftStrategy.prototype.onReturn = function (callId) {
+    this.cur++;
+    if (this.cur == this.strategies.length) {
+        returnStrategy();
+        return;
+    } else {
+        callStrategy(this.strategies[this.cur]);
+    }
+};
+
 
 var RightStrategy = function () {
     Strategy.call(this);
